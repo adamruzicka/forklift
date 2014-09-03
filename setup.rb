@@ -82,7 +82,7 @@ system('rpm -e epel-release')
 system('rpm -e foreman-release')
 system('rpm -e katello-repos')
 system('rpm -e puppetlabs-release')
-system('rm -f /etc/yum.repos.d/scl.repo')
+system('rm -f /etc/yum.repos.d/{scl,rhscl-ruby193-el7-epel-7}.repo')
 
 if ARGV.include?('rhel7')
   # Setup RHEL specific repos
@@ -95,15 +95,15 @@ if ARGV.include?('rhel7')
 end
 
   system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/7/x86_64/katello-repos-latest.rpm')
+  system('sed -i \'s/\$releasever/7/\' /etc/yum.repos.d/katello*')
+  system('sed -i \'s/enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
   system('yum -y localinstall http://yum.theforeman.org/nightly/el7/x86_64/foreman-release.rpm')
   system('yum -y localinstall http://mirror.pnl.gov/epel/7/x86_64/e/epel-release-7-1.noarch.rpm')
   system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm')
 
   system('tar czvf /etc/yum.repos.d/backup.tar.gz /etc/yum.repos.d/* > /dev/null')
-  system('sed -i \'s/\$releasever/7/\' /etc/yum.repos.d/katello*')
-  system('sed -i \'s/\enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
   if !File.directory?('/etc/yum.repos.d/scl.repo')
-    system('curl \'https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/ruby193-el7/repo/epel-7/rhscl-ruby193-el7-epel-7.repo\' -o /etc/yum.repos.d/rhscl-ruby193-el7-epel-7.repo')
+    system('cp ./rhscl-ruby193-el7-epel-7.repo /etc/yum.repos.d/')
   end
 end
 
