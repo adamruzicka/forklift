@@ -86,11 +86,11 @@ system('rm -f /etc/yum.repos.d/scl.repo')
 
 if ARGV.include?('rhel7')
   # Setup RHEL specific repos
-  system('yum -y  --disablerepo="*" --enablerepo=rhel-7-server-rpms install yum-utils wget')
+  system('yum -y  --disablerepo="*" --enablerepo=rhel-x86_64-server-7 install yum-utils wget')
   system('yum repolist') # TODO: necessary?
   system('yum-config-manager --disable "*"')
-  system('yum-config-manager --enable rhel-7-server-rpms epel')
-  system('yum-config-manager --enable rhel-7-server-optional-rpms')
+  system('yum-config-manager --enable rhel-x86_64-server-7 epel')
+  system('yum-config-manager --enable rhel-x86_64-server-optional-7')
   system('yum-config-manager --enable rhel-server-rhscl-7-rpms')
 end
 
@@ -99,9 +99,9 @@ end
   system('yum -y localinstall http://mirror.pnl.gov/epel/7/x86_64/e/epel-release-7-1.noarch.rpm')
   system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm')
 
-  system('tar czvf /etc/yum.repos.d/backup.tar.gz /etc/yum.repos.d/*')
-  system('sed -i \'/\$releasever/7/\' /etc/yum.repos.d/katello*')
-  system('sed -i \'/\enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
+  system('tar czvf /etc/yum.repos.d/backup.tar.gz /etc/yum.repos.d/* > /dev/null')
+  system('sed -i \'s/\$releasever/7/\' /etc/yum.repos.d/katello*')
+  system('sed -i \'s/\enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
   if !File.directory?('/etc/yum.repos.d/scl.repo')
     system('curl \'https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/ruby193-el7/repo/epel-7/rhscl-ruby193-el7-epel-7.repo\' -o /etc/um.repos.d/rhscl-ruby193-el7-epel-7.repo')
   end
