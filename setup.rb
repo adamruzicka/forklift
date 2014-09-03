@@ -46,7 +46,7 @@ if ARGV.include?('fedora19')
   # Facter parses the F19 fedora-release improperly due to the umlaut and apstrophe in the code name
   system('cp ./fedora-release /etc')
 
-elsif ARGV.include?('centos6') || ARGV.include?('rhel6')
+elsif ARGV.include?('centos6') || ARGV.include?('rhel6') || ARGS.include?('rhel7')
 
   # Clean out past runs if necessary:
   system('rpm -e epel-release')
@@ -74,6 +74,35 @@ elsif ARGV.include?('centos6') || ARGV.include?('rhel6')
   system('yum -y localinstall http://yum.theforeman.org/nightly/el6/x86_64/foreman-release.rpm')
   system('yum -y localinstall http://mirror.pnl.gov/epel/6/x86_64/epel-release-6-8.noarch.rpm')
   system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm')
+
+elsif ARGS.include?('centos7') || ARGS.include?('rhel7')
+
+# Clean out past runs if necessary:
+system('rpm -e epel-release')
+system('rpm -e foreman-release')
+system('rpm -e katello-repos')
+system('rpm -e puppetlabs-release')
+system('rm -f /etc/yum.repos.d/scl.repo')
+
+if ARGV.include?('rhel7')
+  # Setup RHEL specific repos
+  system('yum -y  --disablerepo="*" --enablerepo=rhel-7-server-rpms install yum-utils wget')
+  system('yum repolist') # TODO: necessary?
+  system('yum-config-manager --disable "*"')
+  system('yum-config-manager --enable rhel-7-server-rpms epel')
+  system('yum-config-manager --enable rhel-7-server-optional-rpms')
+  system('yum-config-manager --enable rhel-server-rhscl-7-rpms')
+end
+
+# NOTE: Using CentOS SCL even on RHEL to simplify subscription usage.
+if !File.directory?('/etc/yum.repos.d/scl.repo')
+  system('cp ./scl.repo /etc/yum.repos.d/')
+end
+
+system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/7/x86_64/katello-repos-latest.rpm')
+system('yum -y localinstall http://yum.theforeman.org/nightly/el7/x86_64/foreman-release.rpm')
+system('yum -y localinstall http://mirror.pnl.gov/epel/7/x86_64/e/epel-release-7-1.noarch.rpm')
+system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm')
 end
 
 if system('gem list | grep puppet > /dev/null')
