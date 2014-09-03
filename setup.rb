@@ -103,7 +103,7 @@ end
   system('sed -i \'s/\$releasever/7/\' /etc/yum.repos.d/katello*')
   system('sed -i \'s/\enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
   if !File.directory?('/etc/yum.repos.d/scl.repo')
-    system('curl \'https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/ruby193-el7/repo/epel-7/rhscl-ruby193-el7-epel-7.repo\' -o /etc/um.repos.d/rhscl-ruby193-el7-epel-7.repo')
+    system('curl \'https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/ruby193-el7/repo/epel-7/rhscl-ruby193-el7-epel-7.repo\' -o /etc/yum.repos.d/rhscl-ruby193-el7-epel-7.repo')
   end
 end
 
