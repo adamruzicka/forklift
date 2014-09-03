@@ -46,7 +46,7 @@ if ARGV.include?('fedora19')
   # Facter parses the F19 fedora-release improperly due to the umlaut and apstrophe in the code name
   system('cp ./fedora-release /etc')
 
-elsif ARGV.include?('centos6') || ARGV.include?('rhel6') || ARGS.include?('rhel7')
+elsif ARGV.include?('centos6') || ARGV.include?('rhel6')
 
   # Clean out past runs if necessary:
   system('rpm -e epel-release')
@@ -75,7 +75,7 @@ elsif ARGV.include?('centos6') || ARGV.include?('rhel6') || ARGS.include?('rhel7
   system('yum -y localinstall http://mirror.pnl.gov/epel/6/x86_64/epel-release-6-8.noarch.rpm')
   system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm')
 
-elsif ARGS.include?('centos7') || ARGS.include?('rhel7')
+elsif ARGV.include?('centos7') || ARGV.include?('rhel7')
 
 # Clean out past runs if necessary:
 system('rpm -e epel-release')
@@ -94,15 +94,17 @@ if ARGV.include?('rhel7')
   system('yum-config-manager --enable rhel-server-rhscl-7-rpms')
 end
 
-# NOTE: Using CentOS SCL even on RHEL to simplify subscription usage.
-if !File.directory?('/etc/yum.repos.d/scl.repo')
-  system('cp ./scl.repo /etc/yum.repos.d/')
-end
+  system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/7/x86_64/katello-repos-latest.rpm')
+  system('yum -y localinstall http://yum.theforeman.org/nightly/el7/x86_64/foreman-release.rpm')
+  system('yum -y localinstall http://mirror.pnl.gov/epel/7/x86_64/e/epel-release-7-1.noarch.rpm')
+  system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm')
 
-system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/7/x86_64/katello-repos-latest.rpm')
-system('yum -y localinstall http://yum.theforeman.org/nightly/el7/x86_64/foreman-release.rpm')
-system('yum -y localinstall http://mirror.pnl.gov/epel/7/x86_64/e/epel-release-7-1.noarch.rpm')
-system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm')
+  system('tar czvf /etc/yum.repos.d/backup.tar.gz /etc/yum.repos.d/*')
+  system('sed -i \'/\$releasever/7/\' /etc/yum.repos.d/katello*')
+  system('sed -i \'/\enabled=1/enabled=0/\' /etc/yum.repos.d/katello-foreman.repo')
+  if !File.directory?('/etc/yum.repos.d/scl.repo')
+    system('curl \'https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/ruby193-el7/repo/epel-7/rhscl-ruby193-el7-epel-7.repo\' -o /etc/um.repos.d/rhscl-ruby193-el7-epel-7.repo')
+  end
 end
 
 if system('gem list | grep puppet > /dev/null')
