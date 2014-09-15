@@ -28,7 +28,13 @@ OptionParser.new do |opts|
     options[:deployment_dir] = dir
   end
 
+  opts.on("--katello-version 2.0|nightly", "Deploy VERSION of katello") do |ver|
+    options[:katello_ver] = ver.downcase
+  end
+
 end.parse!
+
+options[:katello_ver] ||= 'nightly'
 
 # If /vagrant exists, cd to it:
 if File.directory?('/vagrant/')
@@ -40,6 +46,7 @@ system('setenforce 0')
 
 if ARGV.include?('fedora19')
 
+  puts "!!! Katello 2.0 is not supported on Fedora 19, installing nightly !!!" if options[:katello_ver] == '2.0'
   system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/Fedora/19/x86_64/katello-repos-latest.rpm')
   system('yum -y localinstall http://yum.theforeman.org/nightly/f19/x86_64/foreman-release.rpm')
 
@@ -70,10 +77,15 @@ elsif ARGV.include?('centos6') || ARGV.include?('rhel6')
     system('cp ./scl.repo /etc/yum.repos.d/')
   end
 
-  system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/6Server/x86_64/katello-repos-latest.rpm')
+  if options[:katello_ver] == 'nightly'
+    system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/6Server/x86_64/katello-repos-latest.rpm')
+  else
+    system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/katello-2.0/katello/RHEL/6Server/x86_64/katello-repos-2.0.0-1.el6.noarch.rpm')
+  end
   system('yum -y localinstall http://yum.theforeman.org/nightly/el6/x86_64/foreman-release.rpm')
   system('yum -y localinstall http://mirror.pnl.gov/epel/6/x86_64/epel-release-6-8.noarch.rpm')
   system('yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm')
+    
 end
 
 if system('gem list | grep puppet > /dev/null')
