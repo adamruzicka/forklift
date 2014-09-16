@@ -80,7 +80,7 @@ elsif ARGV.include?('centos6') || ARGV.include?('rhel6')
   if options[:katello_ver] == 'nightly'
     system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/6Server/x86_64/katello-repos-latest.rpm')
   else
-    system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/katello-2.0/katello/RHEL/6Server/x86_64/katello-repos-2.0.0-1.el6.noarch.rpm')
+    system('yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/katello-2.0/katello/RHEL/6Server/x86_64/katello-repos-latest.rpm')
   end
   system('yum -y localinstall http://yum.theforeman.org/nightly/el6/x86_64/foreman-release.rpm')
   system('yum -y localinstall http://mirror.pnl.gov/epel/6/x86_64/epel-release-6-8.noarch.rpm')
