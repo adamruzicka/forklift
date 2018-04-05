@@ -1,0 +1,36 @@
+# Add repos
+- name: 'Find {{ item.repository }} repository'
+  shell: >
+    {{ katello_provisioning_hammer }} repository info
+    --organization '{{ katello_provisioning_organization }}'
+    --product '{{ rhel_product_name }}'
+    --name '{{ item.repository }}'
+  register: repository
+  ignore_errors: True
+
+- name: 'Add {{ item.reposet }} reposet'
+  shell: >
+    {{ katello_provisioning_hammer }} repository-set enable
+    --organization '{{ katello_provisioning_organization }}'
+    --product '{{ rhel_product_name }}'
+    --basearch 'x86_64'
+    --releasever '{{ katello_provisioning_rhel_release }}'
+    --name '{{ item.reposet }}'
+  when: repository.stderr.find('not found') != -1
+
+# Sync repos
+- name: 'Sync {{ item.repository }} repository'
+  shell: >-
+    {{ katello_provisioning_hammer }} repository synchronize
+    --organization '{{ katello_provisioning_organization }}'
+    --name '{{ item.repository }}'
+    --product '{{ rhel_product_name }}'
+  when: katello_provisioning_sync_repos
+
+- name: 'Add {{ item.repository }} repository to content view'
+  shell: >-
+    {{ katello_provisioning_hammer }} content-view add-repository
+    --organization '{{ katello_provisioning_organization }}'
+    --repository '{{ item.repository }}'
+    --name '{{ katello_provisioning_rhel_cv_name }}'
+    --product '{{ rhel_product_name }}'

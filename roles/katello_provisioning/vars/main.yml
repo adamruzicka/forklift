@@ -1,0 +1,7 @@
+# RHEL internal
+rhel_name: 'Red Hat Enterprise Linux'
+rhel_product_name: '{{ rhel_name }} Server'
+rhel_rpm_reposet_name: '{{ rhel_name }} {{ katello_provisioning_rhel_major }} Server (RPMs)'
+rhel_rpm_repo_name: "{{ rhel_name }} {{ katello_provisioning_rhel_major }} Server RPMs x86_64 {{ katello_provisioning_rhel_release }}"
+rhel_kickstart_reposet_name: '{{ rhel_name }} {{ katello_provisioning_rhel_major }} Server (Kickstart)'
+rhel_kickstart_repo_name: "{{ rhel_name }} {{ katello_provisioning_rhel_major }} Server Kickstart x86_64 {{ katello_provisioning_rhel_release }}"

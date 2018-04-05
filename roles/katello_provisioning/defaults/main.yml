@@ -7,3 +7,12 @@ katello_provisioning_sync_repos: True
 katello_provisioning_download_policy: on_demand
 katello_provisioning_installer_options:
  - '--disable-system-checks'
+
+# RHEL
+katello_provisioning_rhel_major: 7
+katello_provisioning_rhel_release: 7Server
+katello_provisioning_rhel_cv_name: "RHEL {{ katello_provisioning_rhel_major }} SOE"
+
+# Set to True if the manifest was already loaded into Katello
+katello_provisioning_manifest_preloaded: False
+katello_provisioning_refresh_manifest: True

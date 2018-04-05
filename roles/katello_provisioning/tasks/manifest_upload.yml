@@ -1,0 +1,11 @@
+# Copy manifest from files to remote system
+- name: 'Copy manifest to remote host'
+  copy:
+    src: "{{ katello_provisioning_manifest_path }}"
+    dest: "/root/manifest.zip"
+
+- name: 'Upload manifest'
+  shell: >
+    {{ katello_provisioning_hammer }} subscription upload
+    --organization '{{ katello_provisioning_organization }}'
+    --file "/root/manifest.zip"
