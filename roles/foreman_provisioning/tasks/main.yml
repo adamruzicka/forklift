@@ -37,15 +37,16 @@
     --name 'Base'
     --architecture x86_64
     --domain {{ foreman_provisioning_domain }}
-    --puppet-environment production
-    --puppet-ca-proxy-id {{ foreman_provisioning_smart_proxy.Id }}
-    --puppet-proxy-id {{ foreman_provisioning_smart_proxy.Id }}
+    {{ "--puppet-environment production" if foreman_provisioning_with_puppet else '' }}
+    {{ "--puppet-ca-proxy-id " + (foreman_provisioning_smart_proxy.Id | string) if foreman_provisioning_with_puppet else '' }}
+    {{ "--puppet-proxy-id " + (foreman_provisioning_smart_proxy.Id | string) if foreman_provisioning_with_puppet else '' }}
     --subnet '{{ foreman_provisioning_network }}/24'
     {{ foreman_provisioning_compute_profile_option }}
     {{ foreman_provisioning_compute_resource_option }}
-    --root-pass changeme
+    --root-password changeme
     --pxe-loader "PXELinux BIOS"
     --organization '{{ foreman_provisioning_organization }}'
+    {{ foreman_provisioning_hostgroup_create_extra_options | join(' ') }}
     {{ foreman_provisioning_hammer_taxonomy_params }}
   when: foreman_provisioning_hostgroup_base.stderr.find('not found') != -1
 

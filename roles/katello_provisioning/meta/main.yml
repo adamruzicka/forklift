@@ -7,3 +7,6 @@ dependencies:
     foreman_provisioning_hammer: '{{ katello_provisioning_hammer }}'
     foreman_installer_disable_system_checks: '{{ katello_provisioning_disable_system_checks }}'
     foreman_provisioning_installer_options: '{{ katello_provisioning_installer_options }}'
+    foreman_provisioning_hostgroup_create_extra_options:
+      - "--lifecycle-environment=Library"
+    foreman_provisioning_with_puppet: false

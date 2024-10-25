@@ -16,30 +16,58 @@
   when: katello_provisioning_product.stderr.find('not found') != -1
 
 # CentOS
-- name: 'find centos repo'
+- name: 'find centos BaseOS repo'
   shell: >
     {{ katello_provisioning_hammer }} repository info
-    --name "CentOS 9"
+    --name "CentOS 9 BaseOS"
     --product "CentOS"
     --organization "{{ katello_provisioning_organization }}"
-  register: katello_provisioning_repo
+  register: katello_provisioning_baseos_repo
   ignore_errors: True
 
-- name: 'create centos repo'
+- name: 'create centos BaseOS repo'
   shell: >
     {{ katello_provisioning_hammer }} repository create
     --product="CentOS"
     --content-type="yum"
-    --name "CentOS 9"
-    --url http://mirror.centos.org/centos/9/os/x86_64
+    --name "CentOS 9 BaseOS"
+    --url https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os/
     --download-policy {{ katello_provisioning_download_policy }}
     --organization "{{ katello_provisioning_organization }}"
-  when: katello_provisioning_repo.stderr.find('not found') != -1
+  when: katello_provisioning_baseos_repo.stderr.find('not found') != -1
 
-- name: 'sync the centos repo'
+- name: 'sync the centos BaseOS repo'
   shell: >
     {{ katello_provisioning_hammer }} repository synchronize
-    --name "CentOS 9"
+    --name "CentOS 9 BaseOS"
+    --product "CentOS"
+    --organization "{{ katello_provisioning_organization }}"
+  when: katello_provisioning_sync_repos
+
+- name: 'find centos AppStream repo'
+  shell: >
+    {{ katello_provisioning_hammer }} repository info
+    --name "CentOS 9 AppStream"
+    --product "CentOS"
+    --organization "{{ katello_provisioning_organization }}"
+  register: katello_provisioning_appstream_repo
+  ignore_errors: True
+
+- name: 'create centos AppStream repo'
+  shell: >
+    {{ katello_provisioning_hammer }} repository create
+    --product="CentOS"
+    --content-type="yum"
+    --name "CentOS 9 AppStream"
+    --url https://mirror.stream.centos.org/9-stream/AppStream/x86_64/os/
+    --download-policy {{ katello_provisioning_download_policy }}
+    --organization "{{ katello_provisioning_organization }}"
+  when: katello_provisioning_appstream_repo.stderr.find('not found') != -1
+
+- name: 'sync the centos AppStream repo'
+  shell: >
+    {{ katello_provisioning_hammer }} repository synchronize
+    --name "CentOS 9 AppStream"
     --product "CentOS"
     --organization "{{ katello_provisioning_organization }}"
   when: katello_provisioning_sync_repos
@@ -265,7 +293,7 @@
 - name: 'find centos kickstart repo'
   shell: >
     {{ katello_provisioning_hammer }} --output=json repository info
-    --name "CentOS 9"
+    --name "CentOS 9 BaseOS"
     --product "CentOS"
     --organization "{{ katello_provisioning_organization }}"
   register: katello_provisioning_repo
