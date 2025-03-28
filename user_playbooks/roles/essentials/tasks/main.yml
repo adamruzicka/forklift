@@ -68,7 +68,7 @@
 - name: 'Alias hm'
   lineinfile:
     path: ~/.bashrc
-    line: "alias hm='BUNDLE_GEMFILE=/home/vagrant/hammer-cli/Gemfile bundle exec hammer'"
+    line: "alias hm='BUNDLE_GEMFILE={{ ansible_user_dir }}/hammer-cli/Gemfile bundle exec hammer'"
     insertafter: alias.*
 
 - name: 'Alias be'
@@ -166,30 +166,24 @@
     value: 'https://github.com/'
     scope: system
 
-- name: 'Copy local private SSH key to guest for vagrant user'
-  become: true
+- name: 'Copy local private SSH key to guest for user'
   copy:
-    src: /home/{{ local_username }}/.ssh/id_ed25519
-    dest: /home/vagrant/.ssh/id_ed25519
-    owner: vagrant
-    group: vagrant
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
+    dest: "{{ ansible_user_dir }}/.ssh/id_ed25519"
     mode: 0600
   when: local_username is defined
 
-- name: 'Copy local public SSH key to guest for vagrant user'
-  become: true
+- name: 'Copy local public SSH key to guest for user'
   copy:
-    src: /home/{{ local_username }}/.ssh/id_ed25519.pub
-    dest: /home/vagrant/.ssh/id_ed25519.pub
-    owner: vagrant
-    group: vagrant
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+    dest: "{{ ansible_user_dir }}/.ssh/id_ed25519.pub"
     mode: 0644
   when: local_username is defined
 
 - name: 'Copy local private SSH key to guest for root user'
   become: true
   copy:
-    src: /home/{{ local_username }}/.ssh/id_ed25519
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
     dest: ~/.ssh/id_ed25519
     owner: root
     group: root
@@ -199,7 +193,7 @@
 - name: 'Copy local public SSH key to guest for root user'
   become: true
   copy:
-    src: /home/{{ local_username }}/.ssh/id_ed25519.pub
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
     dest: ~/.ssh/id_ed25519.pub
     owner: root
     group: root
@@ -224,7 +218,7 @@
 
 - name: Ensure github.com is a known host
   lineinfile:
-    dest: /home/vagrant/.ssh/known_hosts
+    dest: "{{ ansible_user_dir }}/.ssh/known_hosts"
     create: yes
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 github.com') }}"
