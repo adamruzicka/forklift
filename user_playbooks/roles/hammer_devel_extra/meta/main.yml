@@ -18,7 +18,7 @@ dependencies:
       - theforeman/hammer_cli_foreman_remote_execution
       - Katello/hammer-cli-katello
     hammer_devel_local_gems: |-
-      gem 'hammer_cli'
+      gem 'hammer_cli_foreman'
         gem 'hammer_cli_katello'
         gem 'hammer_cli_foreman_admin'
         gem 'hammer_cli_foreman_ansible'

@@ -63,16 +63,16 @@
 
 - name: 'Use production smart-proxy config file'
   become: true
-  command: cp /etc/foreman-proxy/settings.yml /home/vagrant/smart-proxy/config/settings.yml
+  command: "cp /etc/foreman-proxy/settings.yml /home/{{ ansible_env.SUDO_USER }}/smart-proxy/config/settings.yml"
   args:
-    creates: /home/vagrant/smart-proxy/config/settings.yml
+    creates: "/home/{{ ansible_env.SUDO_USER }}/smart-proxy/config/settings.yml"
 
 - name: 'Install gems'
   become: true
   command: 'bundle install'
   args:
-    chdir: /home/vagrant/smart-proxy
-    creates: /home/vagrant/smart-proxy/Gemfile.lock
+    chdir: "/home/{{ ansible_env.SUDO_USER }}/smart-proxy"
+    creates: "/home/{{ ansible_env.SUDO_USER }}/smart-proxy/Gemfile.lock"
 
 - name: 'Stop foreman-proxy'
   become: true
@@ -86,20 +86,20 @@
   replace:
     path: /usr/lib/systemd/system/foreman-proxy.service
     regexp: 'ExecStart=/usr/share/foreman-proxy/bin/smart-proxy'
-    replace: 'ExecStart=bundle exec /home/vagrant/smart-proxy/bin/smart-proxy'
+    replace: 'ExecStart=bundle exec /home/{{ ansible_env.SUDO_USER }}/smart-proxy/bin/smart-proxy'
 
 - name: 'Provide Gemfile env variable for the service'
   become: true
   lineinfile:
     path: /usr/lib/systemd/system/foreman-proxy.service
-    line: 'Environment=BUNDLE_GEMFILE=/home/vagrant/smart-proxy/Gemfile'
+    line: 'Environment=BUNDLE_GEMFILE=/home/{{ ansible_env.SUDO_USER }}/smart-proxy/Gemfile'
     insertafter: 'EnvironmentFile=-/etc/sysconfig/foreman-proxy'
 
 - name: 'Provide Gemfile env variable for the service'
   become: true
   lineinfile:
     path: /usr/lib/systemd/system/foreman-proxy.service
-    line: 'Environment="BUNDLE_GEMFILE=/home/vagrant/smart-proxy/Gemfile"'
+    line: 'Environment="BUNDLE_GEMFILE=/home/{{ ansible_env.SUDO_USER }}/smart-proxy/Gemfile"'
     insertafter: 'EnvironmentFile=-/etc/sysconfig/foreman-proxy'
 
 - name: 'Change user for foreman-proxy service'

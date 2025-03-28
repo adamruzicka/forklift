@@ -1,0 +1,7 @@
+- become: true
+  shell: |
+    cd /usr/share/foreman-installer
+    git init .
+    git add .
+    git commit -m rpm
+    curl -L https://github.com/theforeman/foreman-installer/pull/1023.patch | git am

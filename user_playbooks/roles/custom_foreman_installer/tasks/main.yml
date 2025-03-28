@@ -4,6 +4,9 @@
 - include_tasks: locales.yml
   when: ansible_os_family == 'Debian'
 
+# TODO: Remove once https://github.com/theforeman/foreman-installer/pull/1023 lands in nightlies
+- include_tasks: installer_git.yml
+
 - include_tasks: module_prs.yml
   when: (foreman_installer_module_prs|length > 0) or (foreman_installer_module_branches|length > 0)
 

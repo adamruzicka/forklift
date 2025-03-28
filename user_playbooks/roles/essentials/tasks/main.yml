@@ -1,6 +1,15 @@
 - name: 'Enable CRB'
   become: true
   command: dnf config-manager --set-enabled crb
+  when: ansible_distribution != 'RedHat'
+
+# TODO: Dynamic repo name
+- name: 'Enable CRB (RHEL)'
+  become: true
+  rhsm_repository:
+    name: "codeready-builder-for-rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}-rpms"
+    state: enabled
+  when: ansible_distribution == 'RedHat'
 
 - name: 'Update the system'
   become: true

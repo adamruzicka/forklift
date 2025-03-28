@@ -35,7 +35,7 @@
 
 - name: 'Add vagrant user to libvirt group'
   user:
-    name: vagrant
+    name: "{{ ansible_env.SUDO_USER }}"
     groups: libvirt
     append: yes
     state: present
