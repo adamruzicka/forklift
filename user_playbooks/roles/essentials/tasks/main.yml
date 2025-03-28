@@ -65,41 +65,20 @@
       }
       export PS1='\[\e[38;5;81m\]\w\n\[\e[38;5;202m\]$(git branch 2>/dev/null | grep '"'"'*'"'"' | colrm 1 2)\n\[\e[38;5;213m\]\u@\H \[\e[38;5;202m\]> \[\e[0m\]'
 
-- name: 'Alias hm'
+- name: 'Config bash aliases'
   lineinfile:
     path: ~/.bashrc
-    line: "alias hm='BUNDLE_GEMFILE={{ ansible_user_dir }}/hammer-cli/Gemfile bundle exec hammer'"
+    line: "alias {{ item.key }}='{{ item.value }}'"
     insertafter: alias.*
-
-- name: 'Alias be'
-  lineinfile:
-    path: ~/.bashrc
-    line: "alias be='bundle exec'"
-    insertafter: alias.*
-
-- name: 'Alias bers'
-  lineinfile:
-    path: ~/.bashrc
-    line: "alias bers='bundle exec rails server'"
-    insertafter: alias.*
-
-- name: 'Alias befs'
-  lineinfile:
-    path: ~/.bashrc
-    line: "alias befs='bundle exec foreman start'"
-    insertafter: alias.*
-
-- name: 'Alias bercs'
-  lineinfile:
-    path: ~/.bashrc
-    line: "alias bercs='bundle exec rails console --sandbox'"
-    insertafter: alias.*
-
-- name: 'Alias befsp'
-  lineinfile:
-    path: ~/.bashrc
-    line: "alias befsp='RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production NODE_ENV=production bundle exec foreman start'"
-    insertafter: alias.*
+  loop: "{{ entries | dict2items }}"
+  vars:
+    entries:
+      'hm': "BUNDLE_GEMFILE={{ ansible_user_dir }}/hammer-cli/Gemfile bundle exec hammer"
+      'be': "bundle exec"
+      'bers': "bundle exec rails server"
+      'befs': "bundle exec foreman start"
+      'bercs': "bundle exec rails console --sandbox"
+      'befsp': "RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production NODE_ENV=production bundle exec foreman start"
 
 - name: 'GH API token'
   lineinfile:
@@ -123,48 +102,21 @@
   when: transifex_api_token is defined
 
 # Git configurations
-- name: 'Config git name'
+- name: 'Configure git'
   git_config:
-    name: user.name
+    name: "{{ item.key }}"
     scope: global
-    value: "{{ git_name }}"
-
-- name: 'Config git email'
-  git_config:
-    name: user.email
-    scope: global
-    value: "{{ git_email }}"
-
-- name: 'Config git commit alias'
-  git_config:
-    name: alias.ci
-    scope: global
-    value: commit
-
-- name: 'Config git status alias'
-  git_config:
-    name: alias.st
-    scope: global
-    value: status
-
-- name: 'Config git checkout alias'
-  git_config:
-    name: alias.co
-    scope: global
-    value: checkout
-
-- name: 'Config git pull ff'
-  git_config:
-    name: pull.ff
-    scope: global
-    value: true
-
-- name: 'Always push to github over ssh'
-  become: true
-  git_config:
-    name: 'url."git@github.com:".pushInsteadOf'
-    value: 'https://github.com/'
-    scope: system
+    value: "{{ item.value }}"
+  loop: "{{ entries | dict2items }}"
+  vars:
+    entries:
+      "user.name": "{{ git_name }}"
+      "user.email": "{{ git_email }}"
+      "alias.ci": commit
+      "alias.st": status
+      "alias.co": checkout
+      "pull.ff": true
+      'url."git@github.com:".pushInsteadOf': 'https://github.com/'
 
 - name: 'Copy local private SSH key to guest for user'
   copy:
